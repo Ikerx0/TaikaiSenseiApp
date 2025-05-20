@@ -1,6 +1,5 @@
 package com.example.taikaisensei
 
-import PantallaLogin
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,6 +20,8 @@ class MainActivity : ComponentActivity() {
 
             Surface {
                 NavHost(navController = navController, startDestination = "pantalla_login") {
+
+                    // Pantalla Login
                     composable("pantalla_login") {
                         PantallaLogin(
                             navController = navController,
@@ -30,19 +31,23 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             onLoginFailure = { errorMessage ->
-                                // Manejo de error (opcional)
                             }
                         )
                     }
 
+                    // Pantalla Inicio
                     composable("pantalla_inicio") {
                         PantallaInicio(
                             onCrearDiagramaClick = {
                                 navController.navigate("pantalla_competidores")
+                            },
+                            onVerHistorialClick = {
+                                navController.navigate("pantalla_historial")
                             }
                         )
                     }
 
+                    // Pantalla para seleccionar competidores
                     composable("pantalla_competidores") {
                         PantallaCompetidores(
                             onFinalizarClick = { competidores, nombre, categoria ->
@@ -52,10 +57,16 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate("pantalla_diagrama") {
                                     popUpTo("pantalla_competidores") { inclusive = true }
                                 }
+                            },
+                            onVolverInicio = {
+                                navController.navigate("pantalla_inicio") {
+                                    popUpTo("pantalla_inicio") { inclusive = true }
+                                }
                             }
                         )
                     }
 
+                    // Pantalla Diagrama del Torneo
                     composable("pantalla_diagrama") {
                         PantallaDiagrama(
                             competidoresIniciales = competidoresSeleccionados,
@@ -63,6 +74,11 @@ class MainActivity : ComponentActivity() {
                             categoriaTorneo = categoriaTorneo,
                             navController = navController
                         )
+                    }
+
+                    // Pantalla Historial de Torneos
+                    composable("pantalla_historial") {
+                        PantallaHistorial(navController = navController)
                     }
                 }
             }

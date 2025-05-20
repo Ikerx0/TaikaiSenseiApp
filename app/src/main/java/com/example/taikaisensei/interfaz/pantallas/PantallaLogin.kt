@@ -1,4 +1,4 @@
-// Importaciones necesarias para la interfaz y funcionalidad
+package com.example.taikaisensei.interfaz.pantallas// Importaciones necesarias para la interfaz y funcionalidad
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
@@ -30,7 +30,9 @@ import com.example.taikaisensei.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
-//Pantalla login para acceder con usuario previamente registrado por el administrador
+// Resumen: PantallaLogin.kt es la interfaz de usuario de la pantalla de inicio de sesión de la aplicación. Utiliza Firebase para autenticar al usuario con su correo electrónico y contraseña.
+// Si el inicio de sesión es exitoso, navega a la pantalla principal. Si hay un error, muestra mensajes de error debajo de los campos de correo o contraseña.
+
 @Composable
 fun PantallaLogin(
     navController: NavHostController,

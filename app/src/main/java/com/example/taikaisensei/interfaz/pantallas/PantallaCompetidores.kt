@@ -1,5 +1,6 @@
 package com.example.taikaisensei.interfaz.pantallas
 
+// Importaciones necesarias para la UI y estado en Jetpack Compose
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,10 +23,10 @@ import androidx.compose.ui.unit.sp
 import com.example.taikaisensei.R
 import com.example.taikaisensei.datos.Competidor
 
-//
 @Composable
 fun PantallaCompetidores(
-    onFinalizarClick: (List<Competidor>, String, String) -> Unit = { _, _, _ -> }
+    onFinalizarClick: (List<Competidor>, String, String) -> Unit = { _, _, _ -> },
+    onVolverInicio: () -> Unit = {} // NUEVA LAMBDA para volver al inicio
 ) {
     var nombreTorneo by remember { mutableStateOf("") }
     var categoriaTorneo by remember { mutableStateOf("") }
@@ -108,15 +109,22 @@ fun PantallaCompetidores(
                     )
                 }
 
-                Box(
+                Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
+                        .padding(bottom = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     BotonDegradadoRojoAzul(texto = "Siguiente") {
                         if (nombreTorneo.isNotBlank() && categoriaTorneo.isNotBlank()) {
                             mostrarFormularioInicial = false
                         }
+                    }
+
+                    // BOTÓN PARA VOLVER A PANTALLA DE INICIO
+                    BotonDegradadoRojoAzul(texto = "Volver al inicio") {
+                        onVolverInicio()
                     }
                 }
             }
@@ -229,8 +237,6 @@ fun PantallaCompetidores(
     }
 }
 
-
-// Editor visual para un competidor individual (nombre y club)
 @Composable
 fun CompetidorEditor(
     competidor: Competidor,
@@ -239,7 +245,6 @@ fun CompetidorEditor(
     var nombre by remember { mutableStateOf(competidor.nombre) }
     var club by remember { mutableStateOf(competidor.club) }
 
-    // Tarjeta para cada competidor
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -250,7 +255,6 @@ fun CompetidorEditor(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Campo de texto para el nombre del competidor
             TextField(
                 value = nombre,
                 onValueChange = {
@@ -272,7 +276,6 @@ fun CompetidorEditor(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Campo de texto para el club del competidor
             TextField(
                 value = club,
                 onValueChange = {
@@ -295,11 +298,10 @@ fun CompetidorEditor(
     }
 }
 
-// Composable para botón con degradado rojo-azul y texto centrado
 @Composable
 fun BotonDegradadoRojoAzul(texto: String, onClick: () -> Unit) {
     val gradientBrush = Brush.horizontalGradient(
-        colors = listOf(Color(0xFFCC0000), Color(0xFF0000CC)) // Degradado de rojo a azul
+        colors = listOf(Color(0xFFCC0000), Color(0xFF0000CC))
     )
 
     Button(

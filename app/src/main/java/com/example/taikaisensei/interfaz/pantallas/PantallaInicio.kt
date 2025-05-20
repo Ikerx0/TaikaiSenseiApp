@@ -10,8 +10,10 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -30,118 +32,148 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.taikaisensei.R
 
-// Pantalla de inicio con un botón para crear un nuevo diagrama
 @Composable
 fun PantallaInicio(
-    onCrearDiagramaClick: () -> Unit  // Función que se llama cuando el botón es presionado
+    onCrearDiagramaClick: () -> Unit,
+    onVerHistorialClick: () -> Unit
 ) {
-    // Gradiente de fondo que va de un gris claro a blanco
     val backgroundGradient = Brush.verticalGradient(
         colors = listOf(
-            Color(0xFFA2A2A2), // Gris claro
-            Color(0xFFFFFFFF), // Blanco
-            Color(0xFFA2A2A2)  // Gris claro
+            Color(0xFFA2A2A2),
+            Color(0xFFFFFFFF),
+            Color(0xFFA2A2A2)
         )
     )
 
-    // Fuente de interacción para manejar la interacción con el botón
-    val interactionSource = remember { MutableInteractionSource() }
-    // Detecta si el botón está siendo presionado
-    val isPressed by interactionSource.collectIsPressedAsState()
-    // Escala animada para el efecto de rebote al presionar el botón
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.95f else 1f,  // Reduce el tamaño del botón al presionar
-        label = "BotónRebote"
-    )
-    val haptic = LocalHapticFeedback.current  // Feedback táctil
+    // Botón Crear Nuevo Diagrama interaction
+    val interactionSourceCrear = remember { MutableInteractionSource() }
+    val isPressedCrear by interactionSourceCrear.collectIsPressedAsState()
+    val scaleCrear by animateFloatAsState(targetValue = if (isPressedCrear) 0.95f else 1f, label = "BotonCrearRebote")
+    val topColorCrear by animateColorAsState(targetValue = if (isPressedCrear) Color(0xFF4A4A4A) else Color(0xFF3A3A3A), label = "TopColorCrear")
+    val centerColorCrear by animateColorAsState(targetValue = if (isPressedCrear) Color(0xFF1A1A1A) else Color(0xFF000000), label = "CenterColorCrear")
+    val bottomColorCrear by animateColorAsState(targetValue = if (isPressedCrear) Color(0xFF4A4A4A) else Color(0xFF3A3A3A), label = "BottomColorCrear")
+    val buttonGradientCrear = Brush.verticalGradient(colors = listOf(topColorCrear, centerColorCrear, bottomColorCrear))
 
-    // Animación para los colores del botón
-    val topColor by animateColorAsState(
-        targetValue = if (isPressed) Color(0xFF4A4A4A) else Color(0xFF3A3A3A),
-        label = "TopColor"
-    )
-    val centerColor by animateColorAsState(
-        targetValue = if (isPressed) Color(0xFF1A1A1A) else Color(0xFF000000),
-        label = "CenterColor"
-    )
-    val bottomColor by animateColorAsState(
-        targetValue = if (isPressed) Color(0xFF4A4A4A) else Color(0xFF3A3A3A),
-        label = "BottomColor"
-    )
+    // Botón Ver Historial interaction
+    val interactionSourceHistorial = remember { MutableInteractionSource() }
+    val isPressedHistorial by interactionSourceHistorial.collectIsPressedAsState()
+    val scaleHistorial by animateFloatAsState(targetValue = if (isPressedHistorial) 0.95f else 1f, label = "BotonHistorialRebote")
+    val topColorHistorial by animateColorAsState(targetValue = if (isPressedHistorial) Color(0xFF4A4A4A) else Color(0xFF3A3A3A), label = "TopColorHistorial")
+    val centerColorHistorial by animateColorAsState(targetValue = if (isPressedHistorial) Color(0xFF1A1A1A) else Color(0xFF000000), label = "CenterColorHistorial")
+    val bottomColorHistorial by animateColorAsState(targetValue = if (isPressedHistorial) Color(0xFF4A4A4A) else Color(0xFF3A3A3A), label = "BottomColorHistorial")
+    val buttonGradientHistorial = Brush.verticalGradient(colors = listOf(topColorHistorial, centerColorHistorial, bottomColorHistorial))
 
-    // Gradiente del botón que cambia dinámicamente con el color
-    val buttonGradient = Brush.verticalGradient(
-        colors = listOf(topColor, centerColor, bottomColor)
-    )
+    val haptic = LocalHapticFeedback.current
 
-    // Caja principal que ocupa toda la pantalla y aplica el gradiente de fondo
     Box(
         modifier = Modifier
-            .fillMaxSize()  // La caja llena toda la pantalla
-            .background(brush = backgroundGradient)  // Aplica el fondo con gradiente
+            .fillMaxSize()
+            .background(brush = backgroundGradient)
     ) {
-        // Contenedor para la columna con alineación centrada
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,  // Alinea todo al centro horizontalmente
-            verticalArrangement = Arrangement.spacedBy(24.dp),  // Espaciado entre elementos
-            modifier = Modifier.align(Alignment.Center)  // Alinea la columna al centro de la pantalla
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            modifier = Modifier.align(Alignment.Center)
         ) {
-            // LOGO grande (imagen central)
             Box(
                 modifier = Modifier
-                    .height(400.dp)  // Establece el alto del logo
-                    .width(400.dp)  // Establece el ancho del logo
+                    .height(400.dp)
+                    .width(400.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.taikaisensei_logo),  // Carga el logo desde los recursos
-                    contentDescription = "Logo TaikaiSensei",  // Descripción accesible
-                    contentScale = ContentScale.Fit,  // Ajusta la imagen sin distorsionarla
-                    modifier = Modifier.fillMaxSize()  // Hace que la imagen ocupe todo el espacio
+                    painter = painterResource(id = R.drawable.taikaisensei_logo),
+                    contentDescription = "Logo TaikaiSensei",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxSize()
                 )
             }
 
-            // BOTÓN animado con sombra y color de fondo dinámico
+            // Botón Crear Nuevo Diagrama
             Box(
                 modifier = Modifier
-                    .wrapContentWidth()  // El ancho del botón se ajusta al contenido
-                    .height(60.dp)  // Establece la altura del botón
-                    .offset(y = 6.dp)  // Añade un pequeño desplazamiento vertical
-                    .scale(scale)  // Aplica la animación de escala
+                    .wrapContentWidth()
+                    .height(60.dp)
+                    .offset(y = 6.dp)
+                    .scale(scaleCrear)
                     .shadow(
-                        elevation = 18.dp,  // Sombra con elevación
-                        shape = RoundedCornerShape(80.dp),  // Bordes redondeados
-                        ambientColor = Color(0xFFFEE37D),  // Color de la sombra
-                        spotColor = Color(0xFFFEE37D)  // Color de la luz puntual de la sombra
+                        elevation = 18.dp,
+                        shape = RoundedCornerShape(80.dp),
+                        ambientColor = Color(0xFFFEE37D),
+                        spotColor = Color(0xFFFEE37D)
                     )
-                    .clip(RoundedCornerShape(40.dp))  // Bordes redondeados para el botón
-                    .background(brush = buttonGradient)  // Aplica el gradiente dinámico al fondo
+                    .clip(RoundedCornerShape(40.dp))
+                    .background(brush = buttonGradientCrear)
                     .clickable(
-                        interactionSource = interactionSource,  // Detecta si el botón es presionado
-                        indication = null  // No muestra indicaciones visuales
+                        interactionSource = interactionSourceCrear,
+                        indication = null
                     ) {
-                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)  // Feedback táctil
-                        onCrearDiagramaClick()  // Llama a la función para crear un nuevo diagrama
+                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        onCrearDiagramaClick()
                     }
-                    .padding(horizontal = 24.dp),  // Padding horizontal en el botón
-                contentAlignment = Alignment.Center  // Centra el contenido dentro del botón
+                    .padding(horizontal = 24.dp),
+                contentAlignment = Alignment.Center
             ) {
-                // Fila con el icono y texto del botón
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,  // Alinea verticalmente el contenido
-                    horizontalArrangement = Arrangement.Center,  // Alinea horizontalmente el contenido
-                    modifier = Modifier.padding(horizontal = 16.dp)  // Padding horizontal
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Create,  // Icono de creación
-                        contentDescription = "Crear",  // Descripción accesible
-                        tint = Color.White,  // Color del icono
-                        modifier = Modifier.size(24.dp)  // Tamaño del icono
+                        imageVector = Icons.Default.Create,
+                        contentDescription = "Crear",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))  // Espacio entre el icono y el texto
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Crear Nuevo Diagrama",  // Texto que aparece en el botón
-                        color = Color.White,  // Color del texto
-                        fontSize = 16.sp  // Tamaño de la fuente
+                        text = "Crear Nuevo Diagrama",
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+
+            // Botón Ver Historial de Torneos
+            Box(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .height(60.dp)
+                    .offset(y = 6.dp)
+                    .scale(scaleHistorial)
+                    .shadow(
+                        elevation = 18.dp,
+                        shape = RoundedCornerShape(80.dp),
+                        ambientColor = Color(0xFFFEE37D),
+                        spotColor = Color(0xFFFEE37D)
+                    )
+                    .clip(RoundedCornerShape(40.dp))
+                    .background(brush = buttonGradientHistorial)
+                    .clickable(
+                        interactionSource = interactionSourceHistorial,
+                        indication = null
+                    ) {
+                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        onVerHistorialClick()
+                    }
+                    .padding(horizontal = 24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.List,
+                        contentDescription = "Historial",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Ver Historial de Torneos",
+                        color = Color.White,
+                        fontSize = 16.sp
                     )
                 }
             }
