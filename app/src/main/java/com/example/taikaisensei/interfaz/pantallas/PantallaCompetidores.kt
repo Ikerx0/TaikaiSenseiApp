@@ -26,8 +26,9 @@ import com.example.taikaisensei.datos.Competidor
 @Composable
 fun PantallaCompetidores(
     onFinalizarClick: (List<Competidor>, String, String) -> Unit = { _, _, _ -> },
-    onVolverInicio: () -> Unit = {} // NUEVA LAMBDA para volver al inicio
+    onVolverInicio: () -> Unit = {} // Acción para volver al inicio
 ) {
+    // Variables para datos del torneo y estado de la pantalla
     var nombreTorneo by remember { mutableStateOf("") }
     var categoriaTorneo by remember { mutableStateOf("") }
     var mostrarFormularioInicial by remember { mutableStateOf(true) }
@@ -39,6 +40,7 @@ fun PantallaCompetidores(
     var faseSeleccionada by remember { mutableStateOf("") }
     var competidoresAsignados by remember { mutableStateOf(0) }
 
+    // Opciones para seleccionar la fase del torneo
     val opcionesFase = listOf(
         "Semifinales" to 4,
         "Cuartos de Final" to 8,
@@ -46,6 +48,7 @@ fun PantallaCompetidores(
         "Dieciseisavos de Final" to 32
     )
 
+    // Fondo con degradado vertical
     val backgroundGradient = Brush.verticalGradient(
         listOf(Color(0xFF1A1A1A), Color(0xFF121212), Color(0xFF1A1A1A))
     )
@@ -57,6 +60,7 @@ fun PantallaCompetidores(
             .padding(horizontal = 16.dp, vertical = 45.dp)
     ) {
         when {
+            // Pantalla inicial para ingresar nombre y categoría del torneo
             mostrarFormularioInicial -> {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -64,11 +68,7 @@ fun PantallaCompetidores(
                         .fillMaxSize()
                         .padding(bottom = 80.dp)
                 ) {
-                    Text(
-                        text = "Ingresa el nombre del torneo:",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.White
-                    )
+                    Text("Ingresa el nombre del torneo:", style = MaterialTheme.typography.titleLarge, color = Color.White)
 
                     TextField(
                         value = nombreTorneo,
@@ -86,11 +86,7 @@ fun PantallaCompetidores(
                         )
                     )
 
-                    Text(
-                        text = "Ingresa la categoría:",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.White
-                    )
+                    Text("Ingresa la categoría:", style = MaterialTheme.typography.titleLarge, color = Color.White)
 
                     TextField(
                         value = categoriaTorneo,
@@ -109,6 +105,7 @@ fun PantallaCompetidores(
                     )
                 }
 
+                // Botones para continuar o volver al inicio
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -122,13 +119,13 @@ fun PantallaCompetidores(
                         }
                     }
 
-                    // BOTÓN PARA VOLVER A PANTALLA DE INICIO
                     BotonDegradadoRojoAzul(texto = "Volver al inicio") {
                         onVolverInicio()
                     }
                 }
             }
 
+            // Pantalla para seleccionar la fase inicial del torneo
             !faseInicializada -> {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -136,11 +133,7 @@ fun PantallaCompetidores(
                         .fillMaxSize()
                         .padding(bottom = 80.dp)
                 ) {
-                    Text(
-                        text = "¿En qué fase quieres comenzar tu diagrama?",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.White
-                    )
+                    Text("¿En qué fase quieres comenzar tu diagrama?", style = MaterialTheme.typography.titleLarge, color = Color.White)
 
                     Box {
                         OutlinedButton(
@@ -155,6 +148,7 @@ fun PantallaCompetidores(
                             Icon(Icons.Filled.ArrowDropDown, contentDescription = "Desplegar")
                         }
 
+                        // Menú desplegable con opciones de fase
                         DropdownMenu(
                             expanded = expanded,
                             onDismissRequest = { expanded = false },
@@ -173,6 +167,7 @@ fun PantallaCompetidores(
                         }
                     }
 
+                    // Imagen decorativa en la pantalla
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -191,6 +186,7 @@ fun PantallaCompetidores(
                     }
                 }
 
+                // Botón para confirmar selección y generar competidores
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -209,6 +205,7 @@ fun PantallaCompetidores(
                 }
             }
 
+            // Pantalla para editar la lista de competidores
             else -> {
                 Column(
                     modifier = Modifier.fillMaxSize()
@@ -228,6 +225,7 @@ fun PantallaCompetidores(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Botón para crear el diagrama con los datos ingresados
                     BotonDegradadoRojoAzul(texto = "Crear Diagrama") {
                         onFinalizarClick(competidores, nombreTorneo, categoriaTorneo)
                     }
@@ -237,6 +235,7 @@ fun PantallaCompetidores(
     }
 }
 
+// Componente para editar los datos de cada competidor
 @Composable
 fun CompetidorEditor(
     competidor: Competidor,
@@ -255,6 +254,7 @@ fun CompetidorEditor(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
+            // Campo para ingresar nombre
             TextField(
                 value = nombre,
                 onValueChange = {
@@ -276,6 +276,7 @@ fun CompetidorEditor(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Campo para ingresar club
             TextField(
                 value = club,
                 onValueChange = {
@@ -298,6 +299,7 @@ fun CompetidorEditor(
     }
 }
 
+// Botón personalizado con degradado rojo y azul
 @Composable
 fun BotonDegradadoRojoAzul(texto: String, onClick: () -> Unit) {
     val gradientBrush = Brush.horizontalGradient(

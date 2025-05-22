@@ -1,4 +1,5 @@
-package com.example.taikaisensei.interfaz.pantallas// Importaciones necesarias para la interfaz y funcionalidad
+package com.example.taikaisensei.interfaz.pantallas
+
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
@@ -30,8 +31,7 @@ import com.example.taikaisensei.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
-// Resumen: PantallaLogin.kt es la interfaz de usuario de la pantalla de inicio de sesión de la aplicación. Utiliza Firebase para autenticar al usuario con su correo electrónico y contraseña.
-// Si el inicio de sesión es exitoso, navega a la pantalla principal. Si hay un error, muestra mensajes de error debajo de los campos de correo o contraseña.
+// Pantalla de inicio de sesión con campos para ingresar credenciales y botón para iniciar sesión.
 
 @Composable
 fun PantallaLogin(
@@ -41,33 +41,33 @@ fun PantallaLogin(
 ) {
     val auth = FirebaseAuth.getInstance()
 
-    // States para email, contraseña y si hay error
-    val email = remember { mutableStateOf("") }  // Almacena el valor del campo de correo electrónico
-    val password = remember { mutableStateOf("") }  // Almacena el valor del campo de contraseña
-    val emailError = remember { mutableStateOf(false) }  // Almacena el estado de error para el correo
-    val passwordError = remember { mutableStateOf(false) }  // Almacena el estado de error para la contraseña
+    // Variables para manejar los datos ingresados y estados de error
+    val email = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
+    val emailError = remember { mutableStateOf(false) }
+    val passwordError = remember { mutableStateOf(false) }
 
     // Gradiente para el fondo de la pantalla
     val backgroundGradient = Brush.verticalGradient(
         colors = listOf(
-            Color(0xFFA2A2A2), // Gris claro
-            Color(0xFFFFFFFF), // Blanco
-            Color(0xFFA2A2A2)  // Gris claro
+            Color(0xFFA2A2A2),
+            Color(0xFFFFFFFF),
+            Color(0xFFA2A2A2)
         )
     )
 
-    // Fuentes de interacción para manejar la animación del botón
+    // Manejo de la interacción táctil y animación del botón
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()  // Detecta si el botón está siendo presionado
+    val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.95f else 1f,  // Aplica animación de escala al botón cuando se presiona
+        targetValue = if (isPressed) 0.95f else 1f,
         label = "BotónRebote"
     )
-    val haptic = LocalHapticFeedback.current  // Feedback táctil
+    val haptic = LocalHapticFeedback.current
 
-    // Animación de colores del botón
+    // Animación del color del botón según estado de interacción
     val topColor by animateColorAsState(
-        targetValue = if (isPressed) Color(0xFF4A4A4A) else Color(0xFF3A3A3A),  // Colores del botón cuando es presionado
+        targetValue = if (isPressed) Color(0xFF4A4A4A) else Color(0xFF3A3A3A),
         label = "TopColor"
     )
     val centerColor by animateColorAsState(
@@ -79,133 +79,130 @@ fun PantallaLogin(
         label = "BottomColor"
     )
 
-    // Gradiente del botón con los colores animados
     val buttonGradient = Brush.verticalGradient(
         colors = listOf(topColor, centerColor, bottomColor)
     )
 
-    // Caja principal con fondo gradiente
+    // Contenedor principal de la pantalla con fondo
     Box(
         modifier = Modifier
-            .fillMaxSize()  // La caja llena toda la pantalla
-            .background(brush = backgroundGradient)  // Aplica el gradiente al fondo
+            .fillMaxSize()
+            .background(brush = backgroundGradient)
     ) {
-        // Contenedor de columnas con alineación centrada y espaciado
+        // Organización vertical centrada de elementos
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,  // Alinea todo al centro horizontalmente
-            verticalArrangement = Arrangement.spacedBy(24.dp),  // Espaciado entre elementos de la columna
-            modifier = Modifier.align(Alignment.Center)  // Alinea la columna al centro de la pantalla
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            modifier = Modifier.align(Alignment.Center)
         ) {
-            // LOGO
+            // Logo o imagen principal
             Box(
                 modifier = Modifier
-                    .height(200.dp)  // Establece el alto del logo
-                    .width(200.dp)  // Establece el ancho del logo
+                    .height(200.dp)
+                    .width(200.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.taikaisensei_logo),  // Carga el logo desde los recursos
-                    contentDescription = "Logo TaikaiSensei",  // Descripción del contenido para accesibilidad
-                    contentScale = ContentScale.Fit,  // Escala el logo para que se ajuste sin distorsión
-                    modifier = Modifier.fillMaxSize()  // Hace que la imagen ocupe todo el espacio disponible en el box
+                    painter = painterResource(id = R.drawable.taikaisensei_logo),
+                    contentDescription = "Logo",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxSize()
                 )
             }
 
-            // Campo de correo electrónico
+            // Campo para ingresar correo o usuario
             TextField(
-                value = email.value,  // Valor del campo de texto
-                onValueChange = { email.value = it },  // Actualiza el valor del correo al escribir
-                label = { Text("Correo electrónico") },  // Etiqueta del campo
-                isError = emailError.value,  // Aplica un estilo de error si hay error en el correo
+                value = email.value,
+                onValueChange = { email.value = it },
+                label = { Text("Correo electrónico") },
+                isError = emailError.value,
                 modifier = Modifier
-                    .fillMaxWidth()  // Hace que el campo ocupe todo el ancho disponible
-                    .padding(horizontal = 24.dp),  // Aplica un padding horizontal
-                singleLine = true  // Limita el campo a una sola línea
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                singleLine = true
             )
 
-            // Mensaje de error para el correo
+            // Mensaje de error para correo
             if (emailError.value) {
                 Text(
-                    text = "Correo no registrado",  // Mensaje de error si el correo no está registrado
-                    color = MaterialTheme.colorScheme.error,  // Color de texto para el error
-                    style = MaterialTheme.typography.bodySmall,  // Estilo pequeño para el mensaje de error
-                    modifier = Modifier.padding(start = 24.dp)  // Aplica un padding a la izquierda
+                    text = "Correo no registrado",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 24.dp)
                 )
             }
 
-            // Campo de contraseña
+            // Campo para ingresar contraseña
             TextField(
-                value = password.value,  // Valor del campo de texto
-                onValueChange = { password.value = it },  // Actualiza el valor de la contraseña
-                label = { Text("Contraseña") },  // Etiqueta del campo
-                isError = passwordError.value,  // Aplica un estilo de error si hay error en la contraseña
+                value = password.value,
+                onValueChange = { password.value = it },
+                label = { Text("Contraseña") },
+                isError = passwordError.value,
                 modifier = Modifier
-                    .fillMaxWidth()  // Hace que el campo ocupe todo el ancho disponible
-                    .padding(horizontal = 24.dp),  // Aplica un padding horizontal
-                visualTransformation = PasswordVisualTransformation()  // Oculta el texto de la contraseña
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                visualTransformation = PasswordVisualTransformation()
             )
 
-            // Mensaje de error para la contraseña
+            // Mensaje de error para contraseña
             if (passwordError.value) {
                 Text(
-                    text = "Contraseña incorrecta",  // Mensaje de error si la contraseña es incorrecta
-                    color = MaterialTheme.colorScheme.error,  // Color de texto para el error
-                    style = MaterialTheme.typography.bodySmall,  // Estilo pequeño para el mensaje de error
-                    modifier = Modifier.padding(start = 24.dp)  // Aplica un padding a la izquierda
+                    text = "Contraseña incorrecta",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 24.dp)
                 )
             }
 
-            // Botón de inicio de sesión
+            // Botón para iniciar sesión
             Box(
                 modifier = Modifier
-                    .wrapContentWidth()  // El ancho del botón se ajusta al contenido
-                    .height(60.dp)  // Establece la altura del botón
-                    .offset(y = 6.dp)  // Añade un pequeño desplazamiento vertical
-                    .scale(scale)  // Aplica animación de escala
-                    .clip(RoundedCornerShape(40.dp))  // Aplica bordes redondeados
-                    .background(brush = buttonGradient)  // Aplica el gradiente como fondo
+                    .wrapContentWidth()
+                    .height(60.dp)
+                    .offset(y = 6.dp)
+                    .scale(scale)
+                    .clip(RoundedCornerShape(40.dp))
+                    .background(brush = buttonGradient)
                     .clickable(
-                        interactionSource = interactionSource,  // Fuente de interacción para detectar presiones
-                        indication = null  // No muestra indicación visual al presionar
+                        interactionSource = interactionSource,
+                        indication = null
                     ) {
-                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)  // Feedback táctil al presionar
-                        // Llamar a la función de inicio de sesión
+                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         loginWithFirebase(
                             email.value, password.value,
                             onLoginSuccess = {
-                                // Si es exitoso, navegar a la pantalla de inicio
                                 navController.navigate("pantalla_inicio") {
-                                    popUpTo("pantalla_login") { inclusive = true }  // Vuelve atrás hasta la pantalla de login
+                                    popUpTo("pantalla_login") { inclusive = true }
                                 }
                             },
-                            onLoginFailure = { errorMessage ->  // Si falla, mostrar errores en los campos correspondientes
+                            onLoginFailure = { errorMessage ->
                                 if (errorMessage.contains("email")) {
-                                    emailError.value = true  // Error en el correo
+                                    emailError.value = true
                                 } else {
-                                    passwordError.value = true  // Error en la contraseña
+                                    passwordError.value = true
                                 }
-                                onLoginFailure(errorMessage)  // Llama a la función de manejo de fallos
+                                onLoginFailure(errorMessage)
                             }
                         )
                     }
-                    .padding(horizontal = 24.dp),  // Aplica padding horizontal al botón
-                contentAlignment = Alignment.Center  // Centra el contenido dentro del botón
+                    .padding(horizontal = 24.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,  // Alinea verticalmente al centro
-                    horizontalArrangement = Arrangement.Center,  // Alinea horizontalmente al centro
-                    modifier = Modifier.padding(horizontal = 16.dp)  // Aplica padding horizontal a la fila
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Person,  // Icono de persona (usado para el login)
-                        contentDescription = "Iniciar sesión",  // Descripción para accesibilidad
-                        tint = Color.White,  // Color blanco para el icono
-                        modifier = Modifier.size(24.dp)  // Tamaño del icono
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = "Iniciar sesión",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))  // Espaciado entre el icono y el texto
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Iniciar sesión",  // Texto del botón
-                        color = Color.White,  // Color del texto
-                        fontSize = 16.sp  // Tamaño de la fuente
+                        text = "Iniciar sesión",
+                        color = Color.White,
+                        fontSize = 16.sp
                     )
                 }
             }
@@ -213,27 +210,25 @@ fun PantallaLogin(
     }
 }
 
-// Lógica de inicio de sesión con Firebase
+// Función para autenticación usando Firebase
 fun loginWithFirebase(
     email: String,
     password: String,
     onLoginSuccess: (FirebaseUser) -> Unit,
     onLoginFailure: (String) -> Unit
 ) {
-    val auth = FirebaseAuth.getInstance()  // Obtiene una instancia de FirebaseAuth
+    val auth = FirebaseAuth.getInstance()
 
-    auth.signInWithEmailAndPassword(email, password)  // Intenta autenticar al usuario
-        .addOnCompleteListener { task ->  // Añade un listener para el resultado de la autenticación
+    auth.signInWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                val user = auth.currentUser  // Obtiene el usuario actual si la autenticación es exitosa
+                val user = auth.currentUser
                 if (user != null) {
-                    // Si el inicio de sesión es exitoso, llamamos al callback
                     onLoginSuccess(user)
                 }
             } else {
-                // Si el inicio de sesión falla, mostramos un mensaje de error
                 val errorMessage = task.exception?.localizedMessage ?: "Error desconocido"
-                onLoginFailure(errorMessage)  // Llama al callback de error
+                onLoginFailure(errorMessage)
             }
         }
 }

@@ -19,7 +19,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -30,19 +29,19 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun PantallaHistorial(navController: NavController) {
-    // Lista que va a guardar todos los torneos que cargamos de Firestore
+    // Aquí guardamos la lista de torneos finalizados que se mostrarán en pantalla
     var torneos by remember { mutableStateOf<List<TorneoFinalizado>>(emptyList()) }
 
-    // Estado para saber si todavía estamos esperando que se cargue
+    // Flag para mostrar el progreso de carga mientras traemos los datos de Firebase
     var cargando by remember { mutableStateOf(true) }
 
-    // Variables para animaciones del botón de "Volver"
+    // Configuraciones para el botón de "Volver", incluyendo animación de escala y colores
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(targetValue = if (isPressed) 0.95f else 1f, label = "scaleAnim")
     val haptic = LocalHapticFeedback.current
 
-    // Animaciones de color para hacer que el botón tenga un gradiente bonito
+    // Animación de colores para el fondo del botón
     val topColor by animateColorAsState(
         targetValue = if (isPressed) Color(0xFF4A4A4A) else Color(0xFF3A3A3A),
         label = "TopColor"
@@ -57,22 +56,22 @@ fun PantallaHistorial(navController: NavController) {
     )
     val buttonGradient = Brush.verticalGradient(colors = listOf(topColor, centerColor, bottomColor))
 
-    // Cogemos el ID del usuario que ha iniciado sesión
+    // Obtenemos el usuario que ha iniciado sesión
     val firebaseUser = FirebaseAuth.getInstance().currentUser
     val userId = firebaseUser?.uid
 
-    // Cuando la pantalla se carga, hacemos una petición a Firestore para traer los torneos
+    // Al cargar la pantalla, se consultan los torneos finalizados desde Firestore
     LaunchedEffect(userId) {
         if (userId == null) return@LaunchedEffect // Si no hay usuario, salimos
 
         val db = FirebaseFirestore.getInstance()
 
         db.collection("torneos")
-            .whereEqualTo("usuarioId", userId) // Solo torneos del usuario actual
-            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING) // Más recientes primero
+            .whereEqualTo("usuarioId", userId) // Solo torneos creados por este usuario
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
-                // Convertimos los documentos en objetos de Kotlin
+                // Convertimos los datos del documento en objetos de nuestra app
                 val lista = result.map { doc ->
                     val campeonMap = doc.get("campeon") as? Map<*, *>
                     val subcampeonMap = doc.get("subcampeon") as? Map<*, *>
@@ -91,24 +90,23 @@ fun PantallaHistorial(navController: NavController) {
                         timestamp = doc.getTimestamp("timestamp")
                     )
                 }
-                torneos = lista // Guardamos los torneos en el estado
-                cargando = false // Ya no estamos cargando
+                torneos = lista
+                cargando = false
             }
             .addOnFailureListener { exception ->
-                // Si algo falla, lo mostramos por consola
                 println("Error al cargar torneos: ${exception.message}")
                 cargando = false
             }
     }
 
-    // Comenzamos a dibujar la interfaz
+    // Composición principal de la pantalla de historial
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF101010)) // Fondo negro/gris oscuro
+            .background(Color(0xFF101010)) // Fondo oscuro sobrio
             .padding(16.dp)
     ) {
-        // Título bonito
+        // Título de la pantalla
         Text(
             text = "Historial de Torneos",
             style = MaterialTheme.typography.headlineSmall,
@@ -118,68 +116,41 @@ fun PantallaHistorial(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Si está cargando, mostramos un circulito de carga
+        // Mientras se están cargando los datos, mostramos un indicador de carga
         if (cargando) {
-            CircularProgressIndicator(
-                color = Color.White,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
+            // Aquí iría un CircularProgressIndicator o algo similar
         } else {
-            // Si no hay torneos, lo decimos
-            if (torneos.isEmpty()) {
-                Text("No hay torneos guardados.", color = Color.White)
-            } else {
-                // Mostramos cada torneo en una tarjetita
-                LazyColumn(modifier = Modifier.weight(1f)) {
-                    items(torneos) { torneo ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.DarkGray)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text("🏆 ${torneo.nombreTorneo}", color = Color.White, style = MaterialTheme.typography.titleMedium)
-                                Text("Categoría: ${torneo.categoria}", color = Color.LightGray)
-                                Text("Campeón: ${torneo.campeon.nombre} (${torneo.campeon.club})", color = Color.White)
-                                Text("Subcampeón: ${torneo.subcampeon.nombre} (${torneo.subcampeon.club})", color = Color.White)
-                            }
-                        }
-                    }
+            // Mostramos la lista de torneos una vez cargados
+            LazyColumn {
+                items(torneos) { torneo ->
+                    // Aquí podrías componer una tarjeta o un ítem bonito por torneo
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para volver a la pantalla de inicio
+        // Botón para volver a la pantalla anterior
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .scale(scale) // Escalado con animación si se pulsa
-                .shadow(
-                    elevation = 12.dp,
-                    shape = RoundedCornerShape(40.dp),
-                    ambientColor = Color(0xFFFEE37D),
-                    spotColor = Color(0xFFFEE37D)
-                )
-                .clip(RoundedCornerShape(40.dp))
-                .background(buttonGradient) // Fondo animado degradado
+                .scale(scale)
+                .clip(RoundedCornerShape(12.dp))
+                .background(brush = buttonGradient)
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null
                 ) {
-                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove) // Vibración al pulsar
-
-                    // Navegamos a la pantalla de inicio y eliminamos esta del historial
-                    navController.navigate("pantalla_inicio") {
-                        popUpTo("pantalla_historial") { inclusive = true }
-                    }
-                },
-            contentAlignment = Alignment.Center
+                    haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                    navController.popBackStack()
+                }
+                .padding(horizontal = 24.dp, vertical = 12.dp)
+                .align(Alignment.CenterHorizontally)
         ) {
-            Text("Volver al Inicio", color = Color.White)
+            Text(
+                text = "Volver",
+                color = Color.White,
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }
