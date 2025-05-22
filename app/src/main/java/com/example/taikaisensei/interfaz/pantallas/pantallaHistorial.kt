@@ -117,12 +117,11 @@ fun PantallaHistorial(navController: NavController) {
 
         // Mientras se están cargando los datos, mostramos un indicador de carga
         if (cargando) {
-            // Aquí iría un CircularProgressIndicator o algo similar
+
         } else {
             // Mostramos la lista de torneos una vez cargados
             LazyColumn {
                 items(torneos) { torneo ->
-                    // Aquí podrías componer una tarjeta o un ítem bonito por torneo
                 }
             }
         }
